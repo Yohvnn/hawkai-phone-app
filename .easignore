@@ -52,7 +52,6 @@ tmp/
 temp/
 
 # Test files
-__tests__/
 *.test.js
 *.test.ts
 *.spec.js
