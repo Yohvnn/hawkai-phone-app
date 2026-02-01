@@ -33,7 +33,11 @@ const SettingsModal = ({
   userApiKey,
   assistantName,
   colors,
-  t
+  t,
+  availableModels = [],
+  selectedModel = null,
+  onModelChange,
+  loadingModels = false
 }) => {
   const [tempAssistantName, setTempAssistantName] = useState(assistantName || t('ASSISTANT_NAME_DEFAULT'));
   const [customColorInput, setCustomColorInput] = useState('');
@@ -547,6 +551,73 @@ const SettingsModal = ({
               )}
             </View>
           </View>
+
+          {availableModels.length > 0 && (
+            <View style={styles.section}>
+              <Text style={[styles.sectionTitle, { color: colors.TEXT_PRIMARY }]}>
+                AI Model Selection
+              </Text>
+              <Text style={[styles.sectionDescription, { color: colors.TEXT_SECONDARY }]}>
+                Choose which Gemini model to use for responses
+              </Text>
+              {loadingModels && (
+                <Text style={[styles.sectionDescription, { color: colors.TEXT_MUTED }]}>
+                  Loading available models...
+                </Text>
+              )}
+              <View style={styles.optionsContainer}>
+                {availableModels.map(model => (
+                  <TouchableOpacity
+                    key={model.id}
+                    style={[
+                      styles.optionButton,
+                      {
+                        backgroundColor: colors.CARD,
+                        borderColor: selectedModel === model.id ? colors.ACCENT : colors.BORDER,
+                        borderWidth: 1,
+                        shadowColor: '#000',
+                        shadowOffset: { width: 0, height: 1 },
+                        shadowOpacity: selectedModel === model.id ? 0.1 : 0.05,
+                        shadowRadius: 2,
+                        elevation: selectedModel === model.id ? 2 : 1,
+                      }
+                    ]}
+                    onPress={() => onModelChange(model.id)}
+                  >
+                    <Ionicons
+                      name="cube-outline"
+                      size={22}
+                      color={selectedModel === model.id ? colors.ACCENT : colors.TEXT_MUTED}
+                    />
+                    <View style={{ flex: 1 }}>
+                      <Text style={[
+                        styles.optionText,
+                        {
+                          color: selectedModel === model.id ? colors.ACCENT : colors.TEXT_PRIMARY,
+                          fontWeight: selectedModel === model.id ? '600' : '400',
+                        }
+                      ]}>
+                        {model.name}
+                      </Text>
+                      <Text style={[
+                        styles.sectionDescription,
+                        {
+                          color: colors.TEXT_MUTED,
+                          fontSize: 12,
+                          marginTop: 4,
+                        }
+                      ]}>
+                        {model.description || model.id}
+                      </Text>
+                    </View>
+                    {selectedModel === model.id && (
+                      <Ionicons name="checkmark-circle" size={18} color={colors.ACCENT} />
+                    )}
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          )}
 
           <View style={styles.section}>
             <Text style={[styles.sectionTitle, { color: colors.TEXT_PRIMARY }]}>

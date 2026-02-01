@@ -57,7 +57,38 @@ class AIService {
     return this.currentProvider;
   }
 
-  async generateResponse(message, retryCount = 0) {
+  async fetchAvailableModels() {
+    if (this.currentProvider !== 'GEMINI' || !this.aiInstance) {
+      throw new Error('Only available for Gemini provider');
+    }
+
+    try {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models?key=${this.apiKey}`
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch models: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const models = data.models
+        ?.filter(model => model.supportedGenerationMethods?.includes('generateContent'))
+        ?.map(model => ({
+          id: model.name.split('/')[1],
+          name: model.displayName,
+          description: model.description,
+        }))
+        ?.sort((a, b) => a.name.localeCompare(b.name)) || [];
+
+      return models;
+    } catch (error) {
+      console.error('Error fetching models:', error);
+      throw error;
+    }
+  }
+
+  async generateResponse(message, retryCount = 0, customModel = null) {
     if (!this.isReady()) {
       throw new Error('AI service not initialized. Please set up your API key first.');
     }
@@ -67,7 +98,7 @@ class AIService {
 
     try {
       if (this.currentProvider === 'GEMINI') {
-        return await this._generateGeminiResponse(message);
+        return await this._generateGeminiResponse(message, customModel);
       } else if (this.currentProvider === 'OPENAI') {
         return await this._generateOpenAIResponse(message);
       } else {
@@ -83,16 +114,18 @@ class AIService {
         console.log(`Retrying in ${delay}ms... (attempt ${retryCount + 1}/${maxRetries})`);
 
         await new Promise(resolve => setTimeout(resolve, delay));
-        return this.generateResponse(message, retryCount + 1);
+        return this.generateResponse(message, retryCount + 1, customModel);
       }
 
       throw error;
     }
   }
 
-  async _generateGeminiResponse(message) {
+  async _generateGeminiResponse(message, customModel = null) {
+    const modelName = customModel || CONFIG.AI_PROVIDERS.GEMINI.MODEL_NAME;
+    console.log(`Using model: ${modelName}`);
     const model = this.aiInstance.getGenerativeModel({
-      model: CONFIG.AI_PROVIDERS.GEMINI.MODEL_NAME,
+      model: modelName,
       generationConfig: {
         maxOutputTokens: CONFIG.AI_PROVIDERS.GEMINI.MAX_TOKENS,
         temperature: CONFIG.AI_PROVIDERS.GEMINI.TEMPERATURE,

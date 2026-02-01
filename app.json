@@ -6,6 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/Hawk.png",
     "userInterfaceStyle": "automatic",
+    "sdkVersion": "54.0.0",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/Hawk.png",

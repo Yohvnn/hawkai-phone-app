@@ -3,7 +3,7 @@ export const CONFIG = {
     GEMINI: {
       name: 'Google Gemini',
       API_KEY: process.env.EXPO_PUBLIC_GEMINI_API_KEY || 'YOUR_GEMINI_API_KEY_HERE',
-      MODEL_NAME: 'gemini-1.5-flash',
+      MODEL_NAME: 'gemini-2.0-flash',
       MAX_TOKENS: 150,
       TEMPERATURE: 0.7,
     },
@@ -18,7 +18,7 @@ export const CONFIG = {
 
   GEMINI: {
     API_KEY: process.env.EXPO_PUBLIC_GEMINI_API_KEY || 'YOUR_GEMINI_API_KEY_HERE',
-    MODEL_NAME: 'gemini-1.5-flash',
+    MODEL_NAME: 'gemini-2.0-flash',
     MAX_TOKENS: 150,
     TEMPERATURE: 0.7,
   },

@@ -2,6 +2,13 @@
 
 A lightweight personal assistant mobile app built with React Native and Expo, powered by Google's Gemini AI. Features a clean, modern chat interface with customizable themes and multi-language support.
 
+## 📸 Screenshots
+
+<div style="display: flex; gap: 20px; justify-content: center; align-items: center;">
+  <img src="./screenshots/chat.png" alt="Chat Interface" width="250" />
+  <img src="./screenshots/settings.png" alt="Settings" width="250" />
+</div>
+
 ## ✨ Features
 
 - 🤖 **Gemini AI Integration** - Powered by Google's cost-effective Gemini Flash model

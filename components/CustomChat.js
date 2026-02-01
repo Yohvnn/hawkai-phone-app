@@ -5,13 +5,13 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  KeyboardAvoidingView,
   Platform,
-  Alert,
   ActivityIndicator,
+  Keyboard,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
+import Markdown from 'react-native-markdown-display';
 
 const CustomChat = ({
   messages = [],
@@ -23,7 +23,31 @@ const CustomChat = ({
   t
 }) => {
   const [inputText, setInputText] = useState('');
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
   const scrollViewRef = useRef();
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+      (e) => {
+        setKeyboardHeight(e.endCoordinates.height);
+        setTimeout(() => {
+          scrollViewRef.current?.scrollToEnd({ animated: true });
+        }, 100);
+      }
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+      () => {
+        setKeyboardHeight(0);
+      }
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
 
   useEffect(() => {
     if (messages.length > 0) {
@@ -121,14 +145,45 @@ const CustomChat = ({
                 borderColor: theme.BORDER,
               }}
             >
-              <Text style={{
-                color: theme.TEXT_PRIMARY,
-                fontSize: 16,
-                lineHeight: 22,
-                fontWeight: '400',
-              }}>
+              <Markdown
+                style={{
+                  body: { color: theme.TEXT_PRIMARY, fontSize: 16, lineHeight: 22 },
+                  text: { color: theme.TEXT_PRIMARY, fontSize: 16, lineHeight: 22 },
+                  strong: { fontWeight: '700', color: theme.TEXT_PRIMARY },
+                  em: { fontStyle: 'italic', color: theme.TEXT_PRIMARY },
+                  code: {
+                    backgroundColor: theme.BACKGROUND,
+                    color: theme.ACCENT,
+                    fontFamily: 'monospace',
+                    paddingHorizontal: 4,
+                    paddingVertical: 2,
+                    borderRadius: 4,
+                  },
+                  codeBlock: {
+                    backgroundColor: theme.BACKGROUND,
+                    color: theme.ACCENT,
+                    fontFamily: 'monospace',
+                    padding: 8,
+                    borderRadius: 4,
+                    marginVertical: 4,
+                  },
+                  hr: { backgroundColor: theme.BORDER, marginVertical: 8 },
+                  link: { color: theme.ACCENT },
+                  list: { marginVertical: 4 },
+                  listItem: { marginVertical: 2 },
+                  blockquote: {
+                    borderLeftWidth: 3,
+                    borderLeftColor: theme.ACCENT,
+                    paddingLeft: 8,
+                    marginVertical: 4,
+                  },
+                  heading1: { fontSize: 20, fontWeight: '700', marginVertical: 4 },
+                  heading2: { fontSize: 18, fontWeight: '700', marginVertical: 4 },
+                  heading3: { fontSize: 16, fontWeight: '700', marginVertical: 4 },
+                }}
+              >
                 {message.text}
-              </Text>
+              </Markdown>
               <Text style={{
                 color: theme.TEXT_MUTED,
                 fontSize: 12,
@@ -145,16 +200,17 @@ const CustomChat = ({
   };
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
-    >
+    <View style={{ flex: 1, backgroundColor: theme.BACKGROUND }}>
       <ScrollView
         ref={scrollViewRef}
         style={{ flex: 1, backgroundColor: theme.BACKGROUND }}
-        contentContainerStyle={{ paddingTop: 10, flexGrow: 0 }}
+        contentContainerStyle={{
+          paddingTop: 10,
+          paddingBottom: 80 + keyboardHeight,
+        }}
         showsVerticalScrollIndicator={false}
+        keyboardDismissMode="on-drag"
+        keyboardShouldPersistTaps="handled"
       >
         {messages.map((message, index) => renderMessage(message, index))}
 
@@ -194,13 +250,15 @@ const CustomChat = ({
       </ScrollView>
 
       <View style={{
+        position: 'absolute',
+        bottom: keyboardHeight > 0 ? keyboardHeight + 20 : Platform.OS === 'android' ? 24 : 0,
+        left: 0,
+        right: 0,
         backgroundColor: theme.BACKGROUND,
         paddingHorizontal: 16,
-        paddingTop: 12,
-        paddingBottom: Platform.OS === 'ios' ? 12 : 0,
-        marginBottom: Platform.OS === 'android' ? 12 : 0,
-        // borderTopWidth: 1,
-        borderTopColor: theme.BORDER,
+        paddingTop: 8,
+        paddingBottom: Platform.OS === 'ios' ? 12 : 12,
+        borderTopColor: theme.BORDER
       }}>
         <View style={{
           flexDirection: 'row',
@@ -261,7 +319,7 @@ const CustomChat = ({
           </TouchableOpacity>
         </View>
       </View>
-    </KeyboardAvoidingView>
+    </View>
   );
 };
 

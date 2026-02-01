@@ -6,7 +6,8 @@ import {
   SafeAreaView,
   Alert,
   TouchableOpacity,
-  useColorScheme
+  useColorScheme,
+  Platform
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CustomChat from './components/CustomChat';
@@ -32,6 +33,9 @@ export default function App() {
   const [userApiKey, setUserApiKey] = useState('');
   const [assistantName, setAssistantName] = useState('Assistant');
   const [messageCount, setMessageCount] = useState(0);
+  const [availableModels, setAvailableModels] = useState([]);
+  const [selectedModel, setSelectedModel] = useState(null);
+  const [loadingModels, setLoadingModels] = useState(false);
 
   const systemColorScheme = useColorScheme();
   const actualTheme = currentTheme === 'SYSTEM'
@@ -74,19 +78,22 @@ export default function App() {
       const savedApiKey = await AsyncStorage.getItem('userApiKey');
       const savedAssistantName = await AsyncStorage.getItem('assistantName');
       const savedMessageCount = await AsyncStorage.getItem('messageCount');
+      const savedModel = await AsyncStorage.getItem('selectedModel');
 
       if (savedTheme) setCurrentTheme(savedTheme);
       if (savedAccent) setCurrentAccent(savedAccent);
       if (savedCustomColor) setCustomAccentColor(savedCustomColor);
       if (savedLanguage) setCurrentLanguage(savedLanguage);
+      if (savedModel) setSelectedModel(savedModel);
 
       // Force Gemini provider since OpenAI is temporarily disabled
-      setCurrentProvider(providerToUse);
+      setCurrentProvider('GEMINI');
 
       if (savedApiKey) {
         setUserApiKey(savedApiKey);
         // Initialize AI service with Gemini provider and API key
         try {
+          await aiService.initialize('GEMINI', savedApiKey);
         } catch (error) {
           console.warn('Failed to initialize AI service with saved credentials:', error);
         }
@@ -157,6 +164,16 @@ export default function App() {
     }
   };
 
+  const handleModelChange = async (modelId) => {
+    try {
+      setSelectedModel(modelId);
+      await AsyncStorage.setItem('selectedModel', modelId);
+    } catch (error) {
+      console.error('Failed to save model selection:', error);
+      Alert.alert('Error', 'Failed to save model selection. Please try again.');
+    }
+  };
+
   const handleSaveApiKey = async (newApiKey) => {
     try {
       await AsyncStorage.setItem('userApiKey', newApiKey);
@@ -167,9 +184,36 @@ export default function App() {
       try {
         const result = await aiService.initialize(currentProvider, newApiKey);
         Alert.alert('Success!', result.message + ' You can now start chatting with unlimited messages!');
+        
+        // Fetch available models
+        setLoadingModels(true);
+        try {
+          const models = await aiService.fetchAvailableModels();
+          setAvailableModels(models);
+          if (models.length > 0 && !selectedModel) {
+            setSelectedModel(models[0].id);
+            await AsyncStorage.setItem('selectedModel', models[0].id);
+          }
+        } catch (modelError) {
+          console.warn('Failed to fetch available models:', modelError);
+        } finally {
+          setLoadingModels(false);
+        }
       } catch (error) {
         console.error('Failed to initialize AI with new key:', error);
-        Alert.alert('API Key Error', error.message || 'Failed to initialize AI. Please check if the key is valid for the selected provider.');
+        const errorMsg = error.message || 'Failed to initialize AI.';
+        
+        // Better error messages
+        let displayError = errorMsg;
+        if (errorMsg.includes('401') || errorMsg.includes('API key')) {
+          displayError = 'Invalid API key. Please check your key and try again.';
+        } else if (errorMsg.includes('429') || errorMsg.includes('quota')) {
+          displayError = 'Quota exceeded. Please check your plan and billing.';
+        } else if (errorMsg.includes('permission')) {
+          displayError = 'Permission denied. Make sure your API key has the right permissions.';
+        }
+        
+        Alert.alert('API Key Error', displayError);
       }
     } catch (error) {
       console.error('Failed to save API key:', error);
@@ -228,7 +272,7 @@ export default function App() {
 
     try {
       const userMessage = newMessages[0].text;
-      const response = await aiService.generateResponse(userMessage);
+      const response = await aiService.generateResponse(userMessage, 0, selectedModel);
 
       const assistantMessage = {
         _id: Math.round(Math.random() * 1000000),
@@ -246,8 +290,28 @@ export default function App() {
       console.error('Error getting AI response:', error);
 
       let errorMessage = 'Sorry, I encountered an error. Please try again.';
-      if (error.message.includes('API key')) {
-        errorMessage = `Please check your ${CONFIG.AI_PROVIDERS[currentProvider].name} API key configuration.`;
+      
+      // Parse different error types
+      const errorStr = error.message || error.toString();
+      
+      if (errorStr.includes('429') || errorStr.includes('quota') || errorStr.includes('Quota exceeded')) {
+        errorMessage = '⚠️ API Quota Exceeded\n\nYou\'ve reached your free tier limit. Please:\n• Upgrade your plan at ai.google.dev\n• Wait for quota reset\n• Check your billing details';
+        Alert.alert('Quota Exceeded', 'You\'ve used your free API quota. Please upgrade your plan or wait for the quota to reset.');
+      } else if (errorStr.includes('API key') || errorStr.includes('401') || errorStr.includes('invalid')) {
+        errorMessage = `❌ Invalid API Key\n\nPlease check your ${CONFIG.AI_PROVIDERS[currentProvider].name} API key in settings.`;
+        Alert.alert('API Key Error', `Please check your ${CONFIG.AI_PROVIDERS[currentProvider].name} API key configuration.`);
+      } else if (errorStr.includes('429') || errorStr.includes('rate limit') || errorStr.includes('Too many requests')) {
+        errorMessage = '⏱️ Rate Limited\n\nToo many requests. Please wait a moment before trying again.';
+        Alert.alert('Rate Limited', 'Too many requests. Please wait before trying again.');
+      } else if (errorStr.includes('model') || errorStr.includes('not found')) {
+        errorMessage = '🤖 Model Not Available\n\nThe selected model is not available. Please choose a different model in settings.';
+        Alert.alert('Model Error', 'The selected model is not available. Please choose a different model in settings.');
+      } else if (errorStr.includes('network') || errorStr.includes('fetch')) {
+        errorMessage = '🌐 Network Error\n\nCheck your internet connection and try again.';
+        Alert.alert('Network Error', 'Please check your internet connection and try again.');
+      } else {
+        errorMessage = `❌ Error: ${errorStr.substring(0, 100)}...`;
+        Alert.alert('Error', errorStr.substring(0, 150));
       }
 
       const errorResponse = {
@@ -265,7 +329,7 @@ export default function App() {
     } finally {
       setIsTyping(false);
     }
-  }, [aiService, messageCount, assistantName, currentProvider]);
+  }, [aiService, messageCount, assistantName, currentProvider, selectedModel]);
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.BACKGROUND }]}>
@@ -325,6 +389,10 @@ export default function App() {
         assistantName={assistantName}
         colors={colors}
         t={t}
+        availableModels={availableModels}
+        selectedModel={selectedModel}
+        onModelChange={handleModelChange}
+        loadingModels={loadingModels}
       />
 
       <ApiKeyModal
@@ -345,7 +413,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    paddingTop: 30,
+    paddingTop: 50,
     paddingBottom: 10,
     paddingHorizontal: 20,
   },
