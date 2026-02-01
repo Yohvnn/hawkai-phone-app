@@ -27,14 +27,13 @@ const ApiKeyModal = ({
   const [apiKey, setApiKey] = useState(currentApiKey);
   const [showInstructions, setShowInstructions] = useState(false);
 
-  // Handle Android back button
   useEffect(() => {
     const backAction = () => {
       if (visible) {
         onClose();
-        return true; // Prevent default behavior
+        return true;
       }
-      return false; // Allow default behavior
+      return false;
     };
 
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
@@ -48,17 +47,15 @@ const ApiKeyModal = ({
       return;
     }
 
-    // Use provider-specific validation
     const providerConfig = CONFIG.AI_PROVIDERS[currentProvider];
     if (!providerConfig) {
       Alert.alert('Error', 'Invalid AI provider selected');
       return;
     }
 
-    // Basic validation based on provider
     let isValidFormat = false;
     let errorMessage = '';
-    
+
     if (currentProvider === 'GEMINI') {
       isValidFormat = apiKey.startsWith('AIza') && apiKey.length >= 35;
       errorMessage = 'This doesn\'t look like a valid Gemini API key. Gemini API keys typically start with "AIza" and are longer than 35 characters.';
@@ -225,10 +222,8 @@ const ApiKeyModal = ({
       onRequestClose={onClose}
     >
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.BACKGROUND }}>
-        {/* Header */}
         <View style={styles.header}>
           <View style={[styles.headerContent, {
-            // borderBottomColor: colors.BORDER,
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 1 },
             shadowOpacity: 0.05,

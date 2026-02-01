@@ -42,26 +42,24 @@ const SettingsModal = ({
   const languageOptions = getAvailableLanguages();
   const providerOptions = getAIProviderOptions(t);
 
-  // Validate hex color code
   const isValidHexColor = (hex) => {
     const hexRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
     return hexRegex.test(hex);
   };
 
-  // Handle custom color input
   const handleCustomColorSave = () => {
     let colorToSave = customColorInput.trim();
-    
+
     // Add # if missing
     if (colorToSave && !colorToSave.startsWith('#')) {
       colorToSave = '#' + colorToSave;
     }
-    
+
     if (!isValidHexColor(colorToSave)) {
       Alert.alert(t('ERROR'), t('CUSTOM_COLOR_INVALID') || 'Please enter a valid hex color (e.g., #8B5CF6 or #fff)');
       return;
     }
-    
+
     // Save the custom color
     onAccentChange('CUSTOM', colorToSave);
     setCustomColorInput('');
@@ -69,14 +67,13 @@ const SettingsModal = ({
     Alert.alert(t('SUCCESS'), t('CUSTOM_COLOR_SUCCESS') || 'Custom color applied successfully!');
   };
 
-  // Handle Android back button
   useEffect(() => {
     const backAction = () => {
       if (visible) {
         onClose();
-        return true; // Prevent default behavior
+        return true;
       }
-      return false; // Allow default behavior
+      return false;
     };
 
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
@@ -273,7 +270,6 @@ const SettingsModal = ({
       onRequestClose={onClose}
     >
       <SafeAreaView style={[styles.container, { backgroundColor: colors.BACKGROUND }]}>
-        {/* Header */}
         <View style={[styles.header, {
           backgroundColor: colors.BACKGROUND,
           borderBottomColor: colors.BORDER,
@@ -298,7 +294,6 @@ const SettingsModal = ({
         </View>
 
         <ScrollView style={styles.content}>
-          {/* API Key Section */}
           <View style={styles.section}>
             <Text style={[styles.sectionTitle, { color: colors.TEXT_PRIMARY }]}>
               {t('API_KEY_SECTION')}
@@ -352,7 +347,6 @@ const SettingsModal = ({
             </TouchableOpacity>
           </View>
 
-          {/* Assistant Name Section */}
           <View style={styles.section}>
             <Text style={[styles.sectionTitle, { color: colors.TEXT_PRIMARY }]}>
               {t('ASSISTANT_NAME_SECTION')}
@@ -430,7 +424,6 @@ const SettingsModal = ({
             </View>
           </View>
 
-          {/* Language Selection */}
           <View style={styles.section}>
             <Text style={[styles.sectionTitle, { color: colors.TEXT_PRIMARY }]}>
               {t('LANGUAGE_SECTION')}
@@ -443,22 +436,6 @@ const SettingsModal = ({
             </View>
           </View>
 
-          {/* AI Provider Selection - Temporarily hidden */}
-          {/* 
-          <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: colors.TEXT_PRIMARY }]}>
-              AI Provider
-            </Text>
-            <Text style={[styles.sectionDescription, { color: colors.TEXT_SECONDARY }]}>
-              Choose your preferred AI provider for responses
-            </Text>
-            <View style={styles.optionsContainer}>
-              {providerOptions.map(renderProviderOption)}
-            </View>
-          </View>
-          */}
-
-          {/* Theme Selection */}
           <View style={styles.section}>
             <Text style={[styles.sectionTitle, { color: colors.TEXT_PRIMARY }]}>
               {t('THEME_SECTION')}
@@ -473,7 +450,6 @@ const SettingsModal = ({
             </View>
           </View>
 
-          {/* Accent Color Selection */}
           <View style={styles.section}>
             <Text style={[styles.sectionTitle, { color: colors.TEXT_PRIMARY }]}>
               {t('ACCENT_COLOR_SECTION')}
@@ -485,7 +461,6 @@ const SettingsModal = ({
               {accentOptions.map(renderAccentOption)}
             </View>
 
-            {/* Custom Color Input */}
             <View style={styles.customColorContainer}>
               <TouchableOpacity
                 style={[
@@ -502,18 +477,18 @@ const SettingsModal = ({
                 ]}
                 onPress={() => setShowCustomColorInput(!showCustomColorInput)}
               >
-                <Ionicons 
-                  name="color-palette" 
-                  size={20} 
-                  color={colors.TEXT_MUTED} 
+                <Ionicons
+                  name="color-palette"
+                  size={20}
+                  color={colors.TEXT_MUTED}
                 />
                 <Text style={[styles.customColorText, { color: colors.TEXT_PRIMARY }]}>
                   {t('CUSTOM_COLOR') || 'Custom Color'}
                 </Text>
-                <Ionicons 
-                  name={showCustomColorInput ? "chevron-up" : "chevron-down"} 
-                  size={16} 
-                  color={colors.TEXT_MUTED} 
+                <Ionicons
+                  name={showCustomColorInput ? "chevron-up" : "chevron-down"}
+                  size={16}
+                  color={colors.TEXT_MUTED}
                 />
               </TouchableOpacity>
 
@@ -550,21 +525,21 @@ const SettingsModal = ({
                       <Ionicons name="checkmark" size={20} color={colors.ACCENT} />
                     </TouchableOpacity>
                   </View>
-                  
+
                   {customColorInput.length > 0 && (
                     <View style={styles.colorPreviewRow}>
                       <Text style={[styles.previewLabel, { color: colors.TEXT_SECONDARY }]}>
                         {t('PREVIEW') || 'Preview:'}
                       </Text>
-                      <View 
+                      <View
                         style={[
-                          styles.colorPreview, 
-                          { 
-                            backgroundColor: isValidHexColor(customColorInput.startsWith('#') ? customColorInput : '#' + customColorInput) 
+                          styles.colorPreview,
+                          {
+                            backgroundColor: isValidHexColor(customColorInput.startsWith('#') ? customColorInput : '#' + customColorInput)
                               ? (customColorInput.startsWith('#') ? customColorInput : '#' + customColorInput)
-                              : colors.BORDER 
+                              : colors.BORDER
                           }
-                        ]} 
+                        ]}
                       />
                     </View>
                   )}
@@ -573,7 +548,6 @@ const SettingsModal = ({
             </View>
           </View>
 
-          {/* Preview */}
           <View style={styles.section}>
             <Text style={[styles.sectionTitle, { color: colors.TEXT_PRIMARY }]}>
               {t('PREVIEW_SECTION')}
@@ -637,7 +611,6 @@ const SettingsModal = ({
             </View>
           </View>
 
-          {/* Credits */}
           <View style={styles.section}>
             <Text style={[styles.sectionTitle, { color: colors.TEXT_PRIMARY }]}>
               {t('CREDITS_SECTION')}

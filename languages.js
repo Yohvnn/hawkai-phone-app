@@ -1,6 +1,3 @@
-// Language configuration and translations for HawkAI
-// This file contains all text strings used in the app
-
 export const LANGUAGES = {
   EN: 'en',
   FR: 'fr',
@@ -22,12 +19,12 @@ export const TRANSLATIONS = {
     ERROR: 'Error',
     SUCCESS: 'Success!',
     ASSISTANT_NAME_DEFAULT: 'Assistant',
-    
+
     // Main Chat Interface
     CHAT_PLACEHOLDER: 'Type your message...',
     SEND: 'Send',
     ASSISTANT_TYPING: 'I am thinking...',
-    
+
     // Welcome Message
     WELCOME_MESSAGE: `Hello! I'm your personal assistant powered by Gemini AI.
 
@@ -59,7 +56,7 @@ Your conversations will be private and secure!`,
     API_KEY_UPDATE: 'Update API Key',
     API_KEY_CONFIGURED: 'Configured',
     API_KEY_REQUIRED: 'Required for AI chat',
-    
+
     ASSISTANT_NAME_SECTION: 'Assistant Name',
     ASSISTANT_NAME_DESCRIPTION: 'Give your AI assistant a personal name',
     ASSISTANT_NAME_PLACEHOLDER: 'Enter assistant name...',
@@ -68,16 +65,16 @@ Your conversations will be private and secure!`,
     ASSISTANT_NAME_INVALID: 'Please enter a valid name for your assistant.',
     ASSISTANT_NAME_TOO_LONG: 'Please choose a name with 20 characters or less.',
     ASSISTANT_NAME_CHARACTERS: 'characters',
-    
+
     LANGUAGE_SECTION: 'Language',
     LANGUAGE_DESCRIPTION: 'Choose your preferred language',
-    
+
     THEME_SECTION: 'Theme',
     THEME_DESCRIPTION: 'Choose your preferred theme',
     THEME_SYSTEM: 'Follow System',
     THEME_LIGHT: 'Light Mode',
     THEME_DARK: 'Dark Mode',
-    
+
     ACCENT_COLOR_SECTION: 'Accent Color',
     ACCENT_COLOR_DESCRIPTION: 'Customize your app\'s accent color',
     CUSTOM_COLOR: 'Custom Color',
@@ -85,17 +82,17 @@ Your conversations will be private and secure!`,
     CUSTOM_COLOR_INVALID: 'Please enter a valid hex color (e.g., #8B5CF6 or #fff)',
     CUSTOM_COLOR_SUCCESS: 'Custom color applied successfully!',
     PREVIEW: 'Preview',
-    
+
     PREVIEW_SECTION: 'Preview',
     PREVIEW_USER_MESSAGE: 'Your message',
     PREVIEW_ASSISTANT_MESSAGE: 'Assistant response',
-    
+
     CREDITS_SECTION: 'Credits',
     CREDITS_DEVELOPED_BY: 'Developed by',
     CREDITS_POWERED_BY: 'Powered by Google Gemini AI',
     CREDITS_BUILT_WITH: 'Built with React Native & Expo',
     CREDITS_COMPANY: 'BLWK Studio',
-    
+
     // API Key Modal
     API_KEY_MODAL_TITLE: 'API Key Settings',
     API_KEY_INPUT_TITLE: 'Your Gemini API Key',
@@ -119,13 +116,13 @@ Your conversations will be private and secure!`,
     API_KEY_BENEFIT_LIMITS: 'No Limits: Use the app as much as you want',
     API_KEY_VALIDATION_EMPTY: 'Please enter a valid API key',
     API_KEY_VALIDATION_INVALID: 'This doesn\'t look like a valid Gemini API key. Gemini API keys typically start with "AIza" and are longer than 35 characters.',
-    
+
     // Error Messages
     ERROR_GENERAL: 'Sorry, I encountered an error. Please try again.',
     ERROR_OVERLOADED: 'Sorry my brain is overloaded, I cannot give you an answer right now. Try again later.',
     ERROR_QUOTA_EXCEEDED: 'You reached your quotas and your dose of AI, may I tell you that you should lower your usage of AI. For now use the old way and go find a good book for your question.',
     ERROR_API_KEY: 'Please check your API key configuration.',
-    
+
     // Color Names
     COLOR_UNICORN_DREAMS: 'Unicorn Dreams',
     COLOR_BUBBLEGUM_POP: 'Bubblegum Pop',
@@ -138,7 +135,7 @@ Your conversations will be private and secure!`,
     COLOR_MERMAID_TAIL: 'Mermaid Tail',
     COLOR_MONOCHROME: 'Monochrome',
   },
-  
+
   [LANGUAGES.FR]: {
     // App General
     APP_NAME: 'HawkAI',
@@ -149,12 +146,12 @@ Your conversations will be private and secure!`,
     ERROR: 'Erreur',
     SUCCESS: 'Succès !',
     ASSISTANT_NAME_DEFAULT: 'Assistant',
-    
+
     // Main Chat Interface
     CHAT_PLACEHOLDER: 'Tapez votre message...',
     SEND: 'Envoyer',
     ASSISTANT_TYPING: 'Je réfléchis...',
-    
+
     // Welcome Message
     WELCOME_MESSAGE: `Bonjour ! Je suis votre assistant personnel alimenté par Gemini AI. 
 
@@ -186,7 +183,7 @@ Vos conversations seront privées et sécurisées !`,
     API_KEY_UPDATE: 'Mettre à jour la clé API',
     API_KEY_CONFIGURED: 'Configurée',
     API_KEY_REQUIRED: 'Requise pour le chat IA',
-    
+
     ASSISTANT_NAME_SECTION: 'Nom de l\'assistant',
     ASSISTANT_NAME_DESCRIPTION: 'Donnez un nom personnel à votre assistant IA',
     ASSISTANT_NAME_PLACEHOLDER: 'Entrez le nom de l\'assistant...',
@@ -195,16 +192,16 @@ Vos conversations seront privées et sécurisées !`,
     ASSISTANT_NAME_INVALID: 'Veuillez entrer un nom valide pour votre assistant.',
     ASSISTANT_NAME_TOO_LONG: 'Veuillez choisir un nom de 20 caractères ou moins.',
     ASSISTANT_NAME_CHARACTERS: 'caractères',
-    
+
     LANGUAGE_SECTION: 'Langue',
     LANGUAGE_DESCRIPTION: 'Choisissez votre langue préférée',
-    
+
     THEME_SECTION: 'Thème',
     THEME_DESCRIPTION: 'Choisissez votre thème préféré',
     THEME_SYSTEM: 'Suivre le système',
     THEME_LIGHT: 'Mode clair',
     THEME_DARK: 'Mode sombre',
-    
+
     ACCENT_COLOR_SECTION: 'Couleur d\'accent',
     ACCENT_COLOR_DESCRIPTION: 'Personnalisez la couleur d\'accent de votre application',
     CUSTOM_COLOR: 'Couleur personnalisée',
@@ -212,17 +209,17 @@ Vos conversations seront privées et sécurisées !`,
     CUSTOM_COLOR_INVALID: 'Veuillez entrer une couleur hex valide (ex: #8B5CF6 ou #fff)',
     CUSTOM_COLOR_SUCCESS: 'Couleur personnalisée appliquée avec succès!',
     PREVIEW: 'Aperçu',
-    
+
     PREVIEW_SECTION: 'Aperçu',
     PREVIEW_USER_MESSAGE: 'Votre message',
     PREVIEW_ASSISTANT_MESSAGE: 'Réponse de l\'assistant',
-    
+
     CREDITS_SECTION: 'Crédits',
     CREDITS_DEVELOPED_BY: 'Développé par',
     CREDITS_POWERED_BY: 'Alimenté par Google Gemini AI',
     CREDITS_BUILT_WITH: 'Construit avec React Native & Expo',
     CREDITS_COMPANY: 'BLWK Studio',
-    
+
     // API Key Modal
     API_KEY_MODAL_TITLE: 'Paramètres de la clé API',
     API_KEY_INPUT_TITLE: 'Votre clé API Gemini',
@@ -246,13 +243,13 @@ Vos conversations seront privées et sécurisées !`,
     API_KEY_BENEFIT_LIMITS: 'Aucune limite : Utilisez l\'application autant que vous le souhaitez',
     API_KEY_VALIDATION_EMPTY: 'Veuillez entrer une clé API valide',
     API_KEY_VALIDATION_INVALID: 'Cela ne ressemble pas à une clé API Gemini valide. Les clés API Gemini commencent généralement par "AIza" et font plus de 35 caractères.',
-    
+
     // Error Messages
     ERROR_GENERAL: 'Désolé, j\'ai rencontré un soucis. Veuillez réessayer.',
     ERROR_OVERLOADED: 'Désolé, mon cerveau est surchargé, je ne peux pas vous donner de réponse maintenant. Réessayez plus tard.',
     ERROR_QUOTA_EXCEEDED: 'Vous avez atteint vos quotas et votre dose d\'IA, puis-je vous dire que vous devriez réduire votre utilisation de l\'IA. Pour l\'instant, utilisez l\'ancienne méthode et allez chercher un bon livre pour votre question.',
     ERROR_API_KEY: 'Veuillez vérifier la configuration de votre clé API.',
-    
+
     // Color Names
     COLOR_UNICORN_DREAMS: 'Rêves de licorne',
     COLOR_BUBBLEGUM_POP: 'Pop bubble-gum',

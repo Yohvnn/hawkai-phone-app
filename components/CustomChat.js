@@ -13,9 +13,9 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 
-const CustomChat = ({ 
-  messages = [], 
-  onSend, 
+const CustomChat = ({
+  messages = [],
+  onSend,
   user,
   isLoading = false,
   theme,
@@ -25,7 +25,6 @@ const CustomChat = ({
   const [inputText, setInputText] = useState('');
   const scrollViewRef = useRef();
 
-  // Scroll to bottom when new messages arrive
   useEffect(() => {
     if (messages.length > 0) {
       setTimeout(() => {
@@ -36,14 +35,14 @@ const CustomChat = ({
 
   const handleSend = () => {
     if (inputText.trim().length === 0) return;
-    
+
     const message = {
       _id: Date.now().toString(),
       text: inputText.trim(),
       createdAt: new Date(),
       user: user,
     };
-    
+
     onSend([message]);
     setInputText('');
   };
@@ -58,9 +57,9 @@ const CustomChat = ({
   };
 
   const formatTime = (date) => {
-    return new Date(date).toLocaleTimeString([], { 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    return new Date(date).toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit'
     });
   };
 
@@ -91,24 +90,19 @@ const CustomChat = ({
                 padding: 14,
                 borderRadius: 12,
                 borderBottomRightRadius: 4,
-                // shadowColor: '#000',
-                // shadowOffset: { width: 0, height: 1 },
-                // shadowOpacity: 0.05,
-                // shadowRadius: 2,
-                // elevation: 1,
               }}
             >
-              <Text style={{ 
-                color: theme.BUBBLE_TEXT_USER, 
+              <Text style={{
+                color: theme.BUBBLE_TEXT_USER,
                 fontSize: 16,
                 lineHeight: 22,
                 fontWeight: '400',
               }}>
                 {message.text}
               </Text>
-              <Text style={{ 
-                color: theme.BUBBLE_TEXT_USER + '90', 
-                fontSize: 12, 
+              <Text style={{
+                color: theme.BUBBLE_TEXT_USER + '90',
+                fontSize: 12,
                 marginTop: 6,
                 textAlign: 'right',
                 fontWeight: '400',
@@ -125,24 +119,19 @@ const CustomChat = ({
                 borderBottomLeftRadius: 4,
                 borderWidth: 1,
                 borderColor: theme.BORDER,
-                // shadowColor: '#000',
-                // shadowOffset: { width: 0, height: 1 },
-                // shadowOpacity: 0.05,
-                // shadowRadius: 2,
-                // elevation: 1,
               }}
             >
-              <Text style={{ 
-                color: theme.TEXT_PRIMARY, 
+              <Text style={{
+                color: theme.TEXT_PRIMARY,
                 fontSize: 16,
                 lineHeight: 22,
                 fontWeight: '400',
               }}>
                 {message.text}
               </Text>
-              <Text style={{ 
-                color: theme.TEXT_MUTED, 
-                fontSize: 12, 
+              <Text style={{
+                color: theme.TEXT_MUTED,
+                fontSize: 12,
                 marginTop: 6,
                 fontWeight: '400',
               }}>
@@ -161,7 +150,6 @@ const CustomChat = ({
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
     >
-      {/* Messages */}
       <ScrollView
         ref={scrollViewRef}
         style={{ flex: 1, backgroundColor: theme.BACKGROUND }}
@@ -169,8 +157,7 @@ const CustomChat = ({
         showsVerticalScrollIndicator={false}
       >
         {messages.map((message, index) => renderMessage(message, index))}
-        
-        {/* Loading indicator */}
+
         {isLoading && (
           <View style={{
             flexDirection: 'row',
@@ -187,18 +174,13 @@ const CustomChat = ({
               borderColor: theme.BORDER,
               flexDirection: 'row',
               alignItems: 'center',
-              // shadowColor: '#000',
-              // shadowOffset: { width: 0, height: 1 },
-              // shadowOpacity: 0.05,
-              // shadowRadius: 2,
-              // elevation: 1,
             }}>
-              <ActivityIndicator 
-                size="small" 
+              <ActivityIndicator
+                size="small"
                 color={accentColor}
                 style={{ marginRight: 8 }}
               />
-              <Text style={{ 
+              <Text style={{
                 color: theme.TEXT_MUTED,
                 fontSize: 14,
                 fontStyle: 'italic',
@@ -211,7 +193,6 @@ const CustomChat = ({
         )}
       </ScrollView>
 
-      {/* Input Area */}
       <View style={{
         backgroundColor: theme.BACKGROUND,
         paddingHorizontal: 16,
@@ -223,7 +204,6 @@ const CustomChat = ({
       }}>
         <View style={{
           flexDirection: 'row',
-          alignItems: 'flex-end',
           backgroundColor: theme.CARD,
           borderRadius: 12,
           paddingHorizontal: 16,
@@ -256,7 +236,7 @@ const CustomChat = ({
             onSubmitEditing={handleSend}
             blurOnSubmit={false}
           />
-          
+
           <TouchableOpacity
             onPress={handleSend}
             disabled={inputText.trim().length === 0 || isLoading}
@@ -264,8 +244,8 @@ const CustomChat = ({
               marginLeft: 10,
               padding: 10,
               borderRadius: 8,
-              backgroundColor: inputText.trim().length === 0 || isLoading 
-                ? 'transparent' 
+              backgroundColor: inputText.trim().length === 0 || isLoading
+                ? 'transparent'
                 : accentColor + '10',
             }}
           >
@@ -273,8 +253,8 @@ const CustomChat = ({
               name="send"
               size={20}
               color={
-                inputText.trim().length === 0 || isLoading 
-                  ? theme.TEXT_MUTED 
+                inputText.trim().length === 0 || isLoading
+                  ? theme.TEXT_MUTED
                   : accentColor
               }
             />

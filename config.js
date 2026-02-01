@@ -1,28 +1,21 @@
-// Configuration file for the Personal Assistant app
-// This file contains settings for API integration and app behavior
-
 export const CONFIG = {
-  // AI Provider Configuration
   AI_PROVIDERS: {
     GEMINI: {
       name: 'Google Gemini',
-      // Get your API key from: https://makersuite.google.com/app/apikey
       API_KEY: process.env.EXPO_PUBLIC_GEMINI_API_KEY || 'YOUR_GEMINI_API_KEY_HERE',
-      MODEL_NAME: 'gemini-1.5-flash', // Most cost-effective model
+      MODEL_NAME: 'gemini-1.5-flash',
       MAX_TOKENS: 150,
       TEMPERATURE: 0.7,
     },
     OPENAI: {
       name: 'OpenAI GPT',
-      // Get your API key from: https://platform.openai.com/api-keys
       API_KEY: process.env.EXPO_PUBLIC_OPENAI_API_KEY || 'YOUR_OPENAI_API_KEY_HERE',
-      MODEL_NAME: 'gpt-3.5-turbo', // Most cost-effective model
+      MODEL_NAME: 'gpt-3.5-turbo',
       MAX_TOKENS: 150,
       TEMPERATURE: 0.7,
     },
   },
 
-  // Gemini AI Configuration (for backward compatibility)
   GEMINI: {
     API_KEY: process.env.EXPO_PUBLIC_GEMINI_API_KEY || 'YOUR_GEMINI_API_KEY_HERE',
     MODEL_NAME: 'gemini-1.5-flash',
@@ -30,7 +23,6 @@ export const CONFIG = {
     TEMPERATURE: 0.7,
   },
 
-  // App Settings
   APP: {
     NAME: 'HawkAI',
     VERSION: '1.0.0',
@@ -46,10 +38,7 @@ I'm designed to be lightweight, fast, and straightforward - your go-to for quick
 What would you like to know?`,
   },
 
-
-  // UI Settings
   UI: {
-    // Available accent colors with vibrant shades for better visual appeal
     ACCENT_COLORS: {
       UNICORN_DREAMS: '#8B5CF6',    // Vibrant Purple
       BUBBLEGUM_POP: '#EC4899',     // Vibrant Pink
@@ -59,11 +48,10 @@ What would you like to know?`,
       COTTON_CANDY: '#06B6D4',      // Vibrant Cyan
       SKY_DREAMS: '#3B82F6',        // Vibrant Blue
       LAVENDER_LOVE: '#A855F7',     // Vibrant Lavender
-      MERMAID_TAIL: '#14B8A6',      // Vibrant Teal
-      MONOCHROME: '#828282ff',            // Default for custom hex input
+      MERMAID_TAIL: '#14B8A6',
+      MONOCHROME: '#828282ff',
     },
 
-    // shadcn/ui inspired themes
     THEMES: {
       LIGHT: {
         BACKGROUND: '#ffffff',
@@ -103,25 +91,22 @@ What would you like to know?`,
       },
     },
 
-    // Default settings
     DEFAULT_THEME: 'SYSTEM',
     DEFAULT_ACCENT: 'UNICORN_DREAMS',
     DEFAULT_LANGUAGE: 'en',
-    DEFAULT_AI_PROVIDER: 'GEMINI', // Default AI provider
+    DEFAULT_AI_PROVIDER: 'GEMINI',
   },
 
-  // Cost Optimization Settings
   OPTIMIZATION: {
-    // Reduce API calls by limiting message length
     MAX_MESSAGE_LENGTH: 500,
-    // Enable message compression for longer conversations
     ENABLE_COMPRESSION: true,
-    // Cache responses for common queries
-    ENABLE_CACHING: false, // Implement if needed
+    ENABLE_CACHING: false,
   },
 };
 
-// Validation function for API keys
+/**
+ * Validates API keys for AI providers
+ */
 export const validateApiKey = (apiKey, provider = 'GEMINI') => {
   if (!apiKey) {
     return {
@@ -130,7 +115,6 @@ export const validateApiKey = (apiKey, provider = 'GEMINI') => {
     };
   }
 
-  // Check for default placeholder keys
   if (apiKey === 'YOUR_GEMINI_API_KEY_HERE' || apiKey === 'YOUR_OPENAI_API_KEY_HERE') {
     return {
       isValid: false,
@@ -138,7 +122,6 @@ export const validateApiKey = (apiKey, provider = 'GEMINI') => {
     };
   }
 
-  // Provider-specific validation
   if (provider === 'GEMINI') {
     if (!apiKey.startsWith('AIza') || apiKey.length < 35) {
       return {
@@ -168,62 +151,52 @@ export const validateApiKey = (apiKey, provider = 'GEMINI') => {
   };
 };
 
-// Helper function to optimize prompts for cost efficiency
+/**
+ * Optimizes prompts to reduce token usage
+ */
 export const optimizePrompt = (userMessage) => {
-  // Keep prompts concise to reduce token usage
   const basePrompt = "As a helpful personal assistant, provide a concise, practical response to: ";
-
-  // Trim and limit message length
   const trimmedMessage = userMessage.trim().substring(0, CONFIG.OPTIMIZATION.MAX_MESSAGE_LENGTH);
-
   return basePrompt + trimmedMessage;
 };
 
-// Theme management functions
+/**
+ * Gets theme colors based on theme name and accent color
+ */
 export const getThemeColors = (themeName, accentColor, customColor = null) => {
   const theme = CONFIG.UI.THEMES[themeName] || CONFIG.UI.THEMES[CONFIG.UI.DEFAULT_THEME];
   let accent;
 
-  // Use custom color if accentColor is 'CUSTOM' and customColor is provided
   if (accentColor === 'CUSTOM' && customColor) {
     accent = customColor;
   } else if (accentColor === 'MONOCHROME') {
-    // MONOCHROME adapts to theme: white in dark mode, black in light mode
     accent = themeName === 'DARK' ? '#ffffff' : '#000000';
   } else {
     accent = CONFIG.UI.ACCENT_COLORS[accentColor] || CONFIG.UI.ACCENT_COLORS[CONFIG.UI.DEFAULT_ACCENT];
   }
 
-  // Create a copy of the theme and replace accent colors
   const colors = { ...theme };
   colors.BUBBLE_USER = accent;
   colors.ACCENT = accent;
 
-  // Special handling for MONOCHROME text color to ensure proper contrast
   if (accentColor === 'MONOCHROME') {
-    // Ensure proper contrast: dark text on light background, light text on dark background
     if (themeName === 'DARK') {
-      // Dark mode: white background, black text
       colors.BUBBLE_TEXT_USER = '#000000';
     } else {
-      // Light mode: black background, white text  
       colors.BUBBLE_TEXT_USER = '#ffffff';
     }
   } else {
     colors.BUBBLE_TEXT_USER = '#ffffff';
-
-    // For all other accent colors, keep the original theme text colors
-    // This means white text in dark mode, and the original theme colors in light mode
-    // Don't override BUBBLE_TEXT_USER for non-MONOCHROME colors
   }
 
-  // Generate gradient colors based on accent
-  colors.ACCENT_LIGHT = accent + '80'; // 50% opacity
+  colors.ACCENT_LIGHT = accent + '80';
 
   return colors;
 };
 
-// Get available AI providers
+/**
+ * Returns available AI provider options
+ */
 export const getAIProviderOptions = (t) => {
   return [
     {
@@ -245,7 +218,9 @@ export const getAIProviderOptions = (t) => {
   ];
 };
 
-// Get available accent color options
+/**
+ * Returns available accent color options
+ */
 export const getAccentColorOptions = (t) => {
   const colorNames = {
     UNICORN_DREAMS: t ? t('COLOR_UNICORN_DREAMS') : 'Unicorn Dreams',

@@ -1,10 +1,10 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { 
-  StyleSheet, 
-  View, 
-  Text, 
-  SafeAreaView, 
-  Alert, 
+import {
+  StyleSheet,
+  View,
+  Text,
+  SafeAreaView,
+  Alert,
   TouchableOpacity,
   useColorScheme
 } from 'react-native';
@@ -31,30 +31,22 @@ export default function App() {
   const [currentProvider, setCurrentProvider] = useState(CONFIG.DEFAULT_AI_PROVIDER);
   const [userApiKey, setUserApiKey] = useState('');
   const [assistantName, setAssistantName] = useState('Assistant');
-  const [messageCount, setMessageCount] = useState(0); // Track user messages sent
-  
-  // Get system color scheme
+  const [messageCount, setMessageCount] = useState(0);
+
   const systemColorScheme = useColorScheme();
-  
-  // Determine actual theme to use (if SYSTEM is selected, use system preference)
-  const actualTheme = currentTheme === 'SYSTEM' 
+  const actualTheme = currentTheme === 'SYSTEM'
     ? (systemColorScheme === 'dark' ? 'DARK' : 'LIGHT')
     : currentTheme;
-  
-  // Get current theme colors
+
   const colors = getThemeColors(actualTheme, currentAccent, customAccentColor);
-  
-  // Translation function
   const t = useCallback((key) => getTranslation(key, currentLanguage), [currentLanguage]);
 
   useEffect(() => {
-    // Load saved preferences
     loadPreferences();
   }, []);
 
   useEffect(() => {
-    // Set dynamic welcome message based on API key status
-    const welcomeText = userApiKey || CONFIG.GEMINI.API_KEY !== 'YOUR_GEMINI_API_KEY_HERE' 
+    const welcomeText = userApiKey || CONFIG.GEMINI.API_KEY !== 'YOUR_GEMINI_API_KEY_HERE'
       ? t('WELCOME_MESSAGE')
       : t('WELCOME_NO_API');
 
@@ -82,21 +74,19 @@ export default function App() {
       const savedApiKey = await AsyncStorage.getItem('userApiKey');
       const savedAssistantName = await AsyncStorage.getItem('assistantName');
       const savedMessageCount = await AsyncStorage.getItem('messageCount');
-      
+
       if (savedTheme) setCurrentTheme(savedTheme);
       if (savedAccent) setCurrentAccent(savedAccent);
       if (savedCustomColor) setCustomAccentColor(savedCustomColor);
       if (savedLanguage) setCurrentLanguage(savedLanguage);
-      
+
       // Force Gemini provider since OpenAI is temporarily disabled
-      const providerToUse = 'GEMINI';
       setCurrentProvider(providerToUse);
-      
+
       if (savedApiKey) {
         setUserApiKey(savedApiKey);
         // Initialize AI service with Gemini provider and API key
         try {
-          await aiService.initialize(providerToUse, savedApiKey);
         } catch (error) {
           console.warn('Failed to initialize AI service with saved credentials:', error);
         }
@@ -147,9 +137,7 @@ export default function App() {
   const handleProviderChange = (newProvider) => {
     setCurrentProvider(newProvider);
     savePreferences(currentTheme, currentAccent, currentLanguage, newProvider, customAccentColor);
-    // Reset AI service when provider changes
     aiService.reset();
-    // If we have an API key, try to reinitialize with new provider
     if (userApiKey) {
       try {
         aiService.initialize(newProvider, userApiKey);
@@ -173,11 +161,9 @@ export default function App() {
     try {
       await AsyncStorage.setItem('userApiKey', newApiKey);
       setUserApiKey(newApiKey);
-      // Reset message count when API key is added
       setMessageCount(0);
       await AsyncStorage.setItem('messageCount', '0');
-      
-      // Immediately initialize AI service with the new API key
+
       try {
         const result = await aiService.initialize(currentProvider, newApiKey);
         Alert.alert('Success!', result.message + ' You can now start chatting with unlimited messages!');
@@ -200,10 +186,9 @@ export default function App() {
   };
 
   const onSend = useCallback(async (newMessages = []) => {
-    // Check message limit if no API key is set
     if (!aiService.isReady() && messageCount >= 5) {
       Alert.alert(
-        'Message Limit Reached', 
+        'Message Limit Reached',
         `You\'ve sent 5 messages! To continue chatting, please add your ${CONFIG.AI_PROVIDERS[currentProvider].name} API key.`,
         [
           { text: 'Cancel', style: 'cancel' },
@@ -213,17 +198,13 @@ export default function App() {
       return;
     }
 
-    // Check if AI is initialized
     if (!aiService.isReady()) {
-      // Allow message but increment counter
       const newCount = messageCount + 1;
       setMessageCount(newCount);
       saveMessageCount(newCount);
 
-      // Add user message
       setMessages(previousMessages => [...previousMessages, ...newMessages]);
 
-      // Show demo response for users without API key
       setIsTyping(true);
       setTimeout(() => {
         const demoResponse = {
@@ -242,15 +223,13 @@ export default function App() {
       return;
     }
 
-    // Normal flow for users with API key
     setMessages(previousMessages => [...previousMessages, ...newMessages]);
     setIsTyping(true);
 
     try {
       const userMessage = newMessages[0].text;
       const response = await aiService.generateResponse(userMessage);
-      
-      // Add assistant response
+
       const assistantMessage = {
         _id: Math.round(Math.random() * 1000000),
         text: response,
@@ -265,12 +244,12 @@ export default function App() {
       setMessages(previousMessages => [...previousMessages, assistantMessage]);
     } catch (error) {
       console.error('Error getting AI response:', error);
-      
+
       let errorMessage = 'Sorry, I encountered an error. Please try again.';
       if (error.message.includes('API key')) {
         errorMessage = `Please check your ${CONFIG.AI_PROVIDERS[currentProvider].name} API key configuration.`;
       }
-      
+
       const errorResponse = {
         _id: Math.round(Math.random() * 1000000),
         text: errorMessage,
@@ -291,27 +270,25 @@ export default function App() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.BACKGROUND }]}>
       <StatusBar style={colors.STATUS_BAR} />
-      
-      {/* Header with shadcn/ui styling */}
-      <View style={[styles.header, { 
-        backgroundColor: colors.BACKGROUND,
+
+      <View style={[styles.header, {
         borderBottomColor: colors.BORDER,
       }]}>
         <View style={styles.headerContent}>
           <View style={styles.headerText}>
             <Text style={[styles.headerTitle, { color: colors.TEXT_PRIMARY }]}>{CONFIG.APP.NAME}</Text>
             <Text style={[styles.headerSubtitle, { color: colors.TEXT_MUTED }]}>
-              {!aiService.isReady() ? 
-                (messageCount >= 5 ? 'Add API Key to Continue' : `${5 - messageCount} free messages left`) : 
+              {!aiService.isReady() ?
+                (messageCount >= 5 ? 'Add API Key to Continue' : `${5 - messageCount} free messages left`) :
                 isTyping ? `${assistantName} is typing...` : `Online • ${assistantName}`
               }
             </Text>
           </View>
-          <TouchableOpacity 
-            style={[styles.settingsButton, { 
+          <TouchableOpacity
+            style={[styles.settingsButton, {
               backgroundColor: colors.CARD,
               borderColor: colors.BORDER,
-            }]} 
+            }]}
             onPress={() => setShowSettings(true)}
           >
             <Ionicons name="settings-outline" size={20} color={colors.TEXT_SECONDARY} />
@@ -319,7 +296,6 @@ export default function App() {
         </View>
       </View>
 
-        {/* Chat Interface */}
       <CustomChat
         messages={messages}
         onSend={onSend}
@@ -332,7 +308,6 @@ export default function App() {
         t={t}
       />
 
-      {/* Settings Modal */}
       <SettingsModal
         visible={showSettings}
         onClose={() => setShowSettings(false)}
@@ -352,7 +327,6 @@ export default function App() {
         t={t}
       />
 
-      {/* API Key Modal */}
       <ApiKeyModal
         visible={showApiKeyModal}
         onClose={() => setShowApiKeyModal(false)}
@@ -374,24 +348,13 @@ const styles = StyleSheet.create({
     paddingTop: 30,
     paddingBottom: 10,
     paddingHorizontal: 20,
-    // borderBottomWidth: 1,
-    // shadowColor: '#000',
-    // shadowOffset: {
-    //   width: 0,
-    //   height: 1,
-    // },
-    // shadowOpacity: 0.05,
-    // shadowRadius: 2,
-    // elevation: 2,
   },
   headerContent: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
   },
-  headerIcon: {
-    // marginRight removed for gap usage
-  },
+  headerIcon: {},
   appIconContainer: {
     width: 36,
     height: 36,
